@@ -14,7 +14,7 @@
             {
                 "name": "Custom Template Engine",
                 "url": "index.php",
-                "icon": "link"
+                "icon": "far fa-plus-square"
             }
         ]
     },
