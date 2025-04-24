@@ -1132,7 +1132,7 @@ class CustomTemplateEngine extends \ExternalModules\AbstractExternalModule
      *
      * @since 3.1
      */
-    public function createPDF($dompdf_obj, $header, $footer, $main)
+    public function createPDF($dompdf_obj, $header, $footer, $main, $template_file)
     {
         $contents = $this->formatPDFContents($header, $footer, $main);
 
@@ -1144,7 +1144,10 @@ class CustomTemplateEngine extends \ExternalModules\AbstractExternalModule
         $dompdf_obj->set_option('isRemoteEnabled', TRUE);
 
         // Setup the paper size and orientation
-        $dompdf_obj->setPaper("letter", "portrait");
+        list($paperSize, $paperOrientation) = $this->getPaperSettings($template_file);
+        $dompdf_obj->setPaper($paperSize, $paperOrientation);
+        
+        //$dompdf_obj->setPaper("letter", "portrait");
 
         // Render the HTML as PDF
         $dompdf_obj->render();
@@ -1176,7 +1179,7 @@ class CustomTemplateEngine extends \ExternalModules\AbstractExternalModule
         if (isset($main) && !empty($main))
         {
             $dompdf = new Dompdf();
-            $pdf_content = $this->createPDF($dompdf, $header, $footer, $main);
+            $pdf_content = $this->createPDF($dompdf, $header, $footer, $main, $filename);
 
             if (!$this->getProjectSetting("save-report-to-repo"))
             {
@@ -2876,7 +2879,7 @@ class CustomTemplateEngine extends \ExternalModules\AbstractExternalModule
         </script>
         <?php
     }
-
+    
     /**
      * Function called by external module that checks whether the user has permissions to use the module.
      * User needs permissions to export data in order to use module.
@@ -2905,5 +2908,36 @@ class CustomTemplateEngine extends \ExternalModules\AbstractExternalModule
             return NULL;
 
         }  // end else
+    }
+    
+    /**
+     * getPaperSettings($TemplateName) 
+     * Look for module project setting with name corresponding to the tempalte or file name provided
+     *
+     * For supported paper size names look at and search for PAPER_SIZE:
+     * https://github.com/dompdf/dompdf/blob/master/src/Adapter/CPDF.php
+     * 
+     * @param String $name Name of template or pdf document file name
+     * @return Array Array with two elements: 1. paper size e.g. "Letter", "A4"; 2: paper orientation "Portrait" or "Landscape""
+     */
+    protected function getPaperSettings($TemplateName) 
+    {
+		/* default size and orientation */
+        $paperSize = "letter";
+        $paperOrientation = "portrait";
+
+        $templateSettings = $this->getSubSettings('template-options');
+
+        foreach ($templateSettings as $settings) {
+            // look for a template with name occurring within the file name of what's being generated 
+            // (pretty horrid - will catch "MyTemplate" before "MyTemplate_New" - need better way of recording template names perhaps recording to project settings on create/save/delete and auto-generate template name for files system storage?)
+            if (strpos($TemplateName, $settings['template-name']) !== false) {
+                $paperSize = (empty($settings['option-paper-size'])) ? $paperSize : $settings['option-paper-size'];
+                $paperOrientation = (empty($settings['option-paper-orientation'])) ? $paperOrientation : $settings['option-paper-orientation'];
+                break;
+            }
+        }
+
+        return array($paperSize, $paperOrientation);
     }
 }

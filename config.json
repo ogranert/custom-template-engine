@@ -14,7 +14,7 @@
             {
                 "name": "Custom Template Engine",
                 "url": "index.php",
-                "icon": "link"
+                "icon": "far fa-plus-square"
             }
         ]
     },
@@ -67,7 +67,48 @@
             "type": "checkbox",
             "repeatable": false,
             "super-users-only": true
-        }
+        },
+	    {
+            "key": "template-options",
+            "name": "Template configuration options",
+            "required": false,
+            "type": "sub_settings",
+            "repeatable": true,
+            "sub_settings": [
+                {
+                    "key": "template-name",
+                    "name": "Template name",
+                    "required": true,
+                    "type": "text"
+                },
+                {
+                    "key": "option-paper-size",
+                    "name": "Paper size<br>(Optional - specify if different to Letter e.g. A4)",
+                    "required": false,
+                    "type": "dropdown",
+                    "choices": [{ "name": "A4 (210 × 297 mm)", "value": "a4"},
+                                { "name": "A3 (297 × 420 mm)", "value": "a3"},
+                                { "name": "US-Letter (216 × 279 mm)", "value": "letter"},
+                                { "name": "US-Half-Letter/Rechnung (140 × 216 mm)", "value": "half-letter"},
+                                { "name": "US-Legal (216 × 356 mm)", "value": "legal"},
+                                { "name": "US-Ledger (279.4 × 431.8 mm)", "value": "ledger"},
+                                { "name": "Tabloid (279 × 432 mm)", "value": "tabloid"},
+                                { "name": "Executive (184 × 267 mm)", "value": "executive"},
+                                { "name": "Folio (304.8 × 482.6 mm)", "value": "folio"}
+                               ]
+
+                },
+                {
+                    "key": "option-paper-orientation",
+                    "name": "Use landscape orientation instead of portrait?",
+                    "required": false,
+                    "type": "radio",
+                    "choices": [{ "name": "portrait", "value": "portrait"},
+                                { "name": "landscape", "value": "landscape"}
+                               ] 
+                }
+            ]
+        }    
     ],
     "framework-version": 9
 }
